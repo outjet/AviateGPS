@@ -4,19 +4,16 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.PowerManager
 import android.util.Log
 import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -53,8 +50,7 @@ class AviateGPSActivity : AppCompatActivity(), LocationListener, OnMapReadyCallb
     private lateinit var mapToggle: Switch
     private var distance = 0f // Initialize distance here
     private lateinit var placesClient: PlacesClient
-    private lateinit var keepAwakeButton: ToggleButton
-    private lateinit var wakeLock: PowerManager.WakeLock
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,8 +64,8 @@ class AviateGPSActivity : AppCompatActivity(), LocationListener, OnMapReadyCallb
         // Initialize location manager and target location
         locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         targetLocation = Location("Target").apply {
-            latitude = 51.507222 // Example: London's latitude
-            longitude = -0.127500 // Example: London's longitude
+            latitude = 41.41439737031373 // Example: CLE's latitude
+            longitude = -81.84595833196927 // Example: CLE's longitude
         }
 
         // Check and request permissions if necessary
@@ -124,21 +120,6 @@ class AviateGPSActivity : AppCompatActivity(), LocationListener, OnMapReadyCallb
             }
         })
 
-        // Initialize wake lock
-        val powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        wakeLock = powerManager.newWakeLock(
-            PowerManager.PARTIAL_WAKE_LOCK,
-            "AviateGPS::KeepScreenAwake"
-        )
-
-        // Set up keep awake button
-        keepAwakeButton.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                wakeLock.acquire()
-            } else {
-                wakeLock.release()
-            }
-        }
     }
 
     private fun updateTargetMarker() {
@@ -257,23 +238,7 @@ class AviateGPSActivity : AppCompatActivity(), LocationListener, OnMapReadyCallb
         locationManager.removeUpdates(this)
     }
 
-
-//    override fun onSensorChanged(event: SensorEvent?) {
-//        event?.let {
-//            when (it.sensor.type) {
-//                Sensor.TYPE_ACCELEROMETER -> accelerometerTextView.text = "Accelerometer:\nX: ${it.values[0]}\nY: ${it.values[1]}\nZ: ${it.values[2]}"
-//                Sensor.TYPE_GYROSCOPE -> gyroscopeTextView.text = "Gyroscope:\nX: ${it.values[0]}\nY: ${it.values[1]}\nZ: ${it.values[2]}"
-//                Sensor.TYPE_MAGNETIC_FIELD -> magnetometerTextView.text = "Magnetometer:\nX: ${it.values[0]}\nY: ${it.values[1]}\nZ: ${it.values[2]}"
-//            }
-//        }
-//    }
-
-//    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-//    }
-
-
     //This function will toggle the map view between a heads-up view (zoomed in and tilted) and a normal view. Update the onLocationChanged function to move the camera to the current location if the heads-up view is enabled:
-
     @SuppressLint("SetTextI18n")
     override fun onLocationChanged(location: Location) {
         // Check if mMap is initialized
